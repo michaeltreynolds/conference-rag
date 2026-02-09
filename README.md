@@ -14,7 +14,6 @@ A production-ready Retrieval Augmented Generation (RAG) application that allows 
 ## 📋 Prerequisites
 
 - Supabase account (free tier works)
-- OpenAI API key
 - GitHub account (for deployment)
 - Basic knowledge of HTML/CSS/JavaScript
 
@@ -25,8 +24,8 @@ See [SETUP.md](SETUP.md) for detailed step-by-step instructions.
 **Quick Start:**
 1. Create a Supabase project
 2. Update `config.js` with your credentials
-3. Deploy to GitHub Pages
-4. Add your OpenAI API key in the app settings
+3. Deploy Edge Functions (via Google Colab)
+4. Deploy to GitHub Pages
 
 ## 📚 Learning Objectives
 
@@ -61,7 +60,7 @@ This project teaches:
 ## 🔒 Security
 
 - Supabase anon key is safe to expose (protected by RLS)
-- OpenAI keys stored in localStorage (client-side only)
+- OpenAI keys managed server-side via Edge Functions
 - Row Level Security policies control data access
 - HTTPS enforced by GitHub Pages
 
@@ -81,7 +80,7 @@ Educational use only. Do not publicly share applications built with this templat
 ## ⚠️ Important Notes
 
 - Never commit your `config.js` with real credentials
-- Set OpenAI usage limits to avoid unexpected charges
+- Deploy Edge Functions before testing the app
 - Implement RLS policies before loading sensitive data
 - Test thoroughly before sharing your deployment
 

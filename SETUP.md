@@ -5,7 +5,6 @@ This is a starter template for building a Retrieval Augmented Generation (RAG) a
 
 ## Prerequisites
 - A Supabase account (free tier is sufficient)
-- An OpenAI API key
 - Basic knowledge of HTML/CSS/JavaScript
 - Git and GitHub account (for deployment)
 
@@ -243,10 +242,10 @@ See `DATA_LOADING.md` for detailed instructions.
 1. Visit your deployed site
 2. Enter your email and click "Sign In with Magic Link"
 3. Check your email and click the magic link
-4. Once logged in:
-   - Add your OpenAI API key in the settings panel
-   - Try asking a question about conference talks
-   - Verify the RAG system returns relevant answers
+4. Once logged in, try asking a question about conference talks
+5. Verify the RAG system returns relevant answers
+
+**Note**: Edge Functions must be deployed for the app to work. See the Google Colab notebook for deployment.
 
 ## Troubleshooting
 
@@ -274,11 +273,6 @@ See `DATA_LOADING.md` for detailed instructions.
 - Check that you have data in the `documents` table
 - Ensure RLS policies allow authenticated users to read documents
 
-### OpenAI API errors
-- Verify your API key is correct
-- Check you have credits in your OpenAI account
-- Ensure you're using a valid model name
-
 ### GitHub Actions deployment failed
 If you see: *"Branch 'main' is not allowed to deploy to github-pages due to environment protection rules"*
 
@@ -302,7 +296,7 @@ Students should:
 
 - ✅ Never commit your `config.js` with real credentials to a public repo
 - ✅ The anon key is safe to expose (protected by RLS)
-- ✅ OpenAI keys are stored in localStorage (client-side only)
+- ✅ OpenAI keys are managed server-side via Edge Functions
 - ✅ Always use HTTPS in production
 - ✅ RLS is your primary security mechanism
 

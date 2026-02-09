@@ -45,9 +45,6 @@ const userEmailSpan = document.getElementById('user-email');
 const questionInput = document.getElementById('question-input');
 const askBtn = document.getElementById('ask-btn');
 const chatMessages = document.getElementById('chat-messages');
-const openaiKeyInput = document.getElementById('openai-key');
-const numResultsInput = document.getElementById('num-results');
-const saveSettingsBtn = document.getElementById('save-settings-btn');
 const loading = document.getElementById('loading');
 
 // Setup Banner Elements
@@ -58,7 +55,6 @@ const closeSetupBannerBtn = document.getElementById('close-setup-banner');
 const checkConfig = document.getElementById('check-config');
 const checkConnection = document.getElementById('check-connection');
 const checkRedirect = document.getElementById('check-redirect');
-const checkOpenai = document.getElementById('check-openai');
 
 // ============================================
 // SETUP BANNER DETECTION
@@ -137,17 +133,8 @@ async function runSetupChecks() {
     // Check 3: Redirect URL (manual - just show warning/reminder)
     updateCheckItem(checkRedirect, 'warning', '⚠️', `Add ${currentUrl} to Supabase redirect URLs`);
 
-    // Check 4: OpenAI API key set
-    const openaiKey = localStorage.getItem('openai_key');
-    if (openaiKey && openaiKey.startsWith('sk-')) {
-        updateCheckItem(checkOpenai, 'success', '✅', 'OpenAI API key configured');
-        setupStatus.openaiKeySet = true;
-    } else {
-        updateCheckItem(checkOpenai, 'warning', '⏳', 'Add OpenAI API key in settings');
-    }
-
     // Determine if we should show the banner
-    setupStatus.allGood = setupStatus.configValid && setupStatus.connectionOk && setupStatus.openaiKeySet;
+    setupStatus.allGood = setupStatus.configValid && setupStatus.connectionOk;
 
     // Show banner if something needs attention, unless user dismissed it
     const bannerDismissed = sessionStorage.getItem('setup_banner_dismissed');
@@ -288,7 +275,6 @@ function showApp(user) {
     if (loginScreen) loginScreen.classList.add('hidden');
     if (appScreen) appScreen.classList.remove('hidden');
     if (userEmailSpan) userEmailSpan.textContent = user.email;
-    loadSettings();
 }
 
 function showMessage(text, type) {
@@ -310,35 +296,6 @@ function showLoading(show) {
 }
 
 // ============================================
-// SETTINGS MANAGEMENT
-// ============================================
-
-function loadSettings() {
-    const openaiKey = localStorage.getItem('openai_key') || '';
-    const numResults = localStorage.getItem('num_results') || '5';
-
-    if (openaiKeyInput) openaiKeyInput.value = openaiKey;
-    if (numResultsInput) numResultsInput.value = numResults;
-}
-
-if (saveSettingsBtn) {
-    saveSettingsBtn.addEventListener('click', () => {
-        if (openaiKeyInput) localStorage.setItem('openai_key', openaiKeyInput.value);
-        if (numResultsInput) localStorage.setItem('num_results', numResultsInput.value);
-
-        // Show temporary success message
-        const originalText = saveSettingsBtn.textContent;
-        saveSettingsBtn.textContent = '✓ Saved!';
-        setTimeout(() => {
-            saveSettingsBtn.textContent = originalText;
-        }, 2000);
-
-        // Re-run setup checks to update banner
-        runSetupChecks();
-    });
-}
-
-// ============================================
 // RAG QUERY FUNCTIONALITY
 // ============================================
 
@@ -349,8 +306,7 @@ async function askQuestion() {
     }
 
     const question = questionInput ? questionInput.value.trim() : '';
-    const openaiKey = localStorage.getItem('openai_key');
-    const numResults = parseInt(localStorage.getItem('num_results') || '5');
+    const numResults = 5; // Hardcoded default
 
     if (!question) {
         return;
@@ -368,14 +324,14 @@ async function askQuestion() {
     showLoading(true);
 
     try {
-        // Step 1: Get embedding for the question
-        const embedding = await getEmbedding(question, openaiKey);
+        // Step 1: Get embedding for the question (will use Edge Function)
+        const embedding = await getEmbedding(question);
 
         // Step 2: Search for similar documents
         const results = await searchDocuments(embedding, numResults);
 
-        // Step 3: Generate answer using GPT
-        const answer = await generateAnswer(question, results, openaiKey);
+        // Step 3: Generate answer using GPT (will use Edge Function)
+        const answer = await generateAnswer(question, results);
 
         // Add AI response to chat
         addMessage(answer, 'assistant');
